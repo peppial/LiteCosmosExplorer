@@ -1,19 +1,18 @@
 
-**CosmosDB Explorer**
+# CosmosDB Explorer
 
-A client explorer for Microsoft CosmosDB for desktop(Windows, MacOs) and Mobile (Android,iOS).
+A client explorer for Azure Microsoft CosmosDB for desktop (Windows, MacOs) and Mobile (Android,iOS).
 
-**Features**
+## Features
 
-CRUD for every Cosmos DB resource
-Execute SQL Query on a Collection
-JSON Editor for documents
+Execute SQL Query on a collection\
+CRUD for every Cosmos DB resource using a JSON Editor for documents
 
-**Installation**
+## Installation
 
 Download the latest version from releases
 
-**How to Start**
+## How to Start
 
-Add  on launch your Primary or Secondary connection string copied from Azure Portal
+Add  on launch your Primary or Secondary connection string copied from Azure Portal\
 You can add more connection string using the "Connection Strings" menu on top
