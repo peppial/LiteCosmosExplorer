@@ -3,8 +3,6 @@
         xmlns:vm="using:CosmosExplorer.Avalonia.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:drawing="clr-namespace:System.Drawing;assembly=System.Drawing.Primitives"
-        xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="CosmosExplorer.Avalonia.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -17,46 +15,50 @@
     <TabControl SelectedIndex="{Binding SelectedTabIndex}">
         <TabItem Header="Cosmos Explorer" FontSize="16">
             <Grid RowDefinitions="3*,3, 7*" ColumnDefinitions="4*,3,6*">
-
-                <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
-                         ItemsSource="{Binding Databases}"
-                         SelectedItem="{Binding SelectedDatabase}" Margin="5" BorderThickness="1" CornerRadius="3"
-                         Padding="2">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="1"
-                                    CornerRadius="1" Padding="2">
-                                <TextBlock Text="{Binding}" />
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                
-                <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Vertical">
-                <Label BorderBrush="Gray" Padding="2"
-                       Content="Id / partition">
-                </Label>
-                <ListBox  x:Name="documents" 
-                         ItemsSource="{Binding Documents}"
-                         SelectedItem="{Binding SelectedDocument}" Margin="5" BorderThickness="1" CornerRadius="3"
-                         Padding="2">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <Border BorderThickness="1"
-                                    CornerRadius="1" Padding="2">
-                                <TextBlock Text="{Binding}" />
-                            </Border>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-                </StackPanel>
+                <Panel Grid.Column="0" Grid.Row="0"
+                       Margin="5">
+                    <Label BorderBrush="Gray" Margin="0"
+                           Content="Database -> Container">
+                    </Label>
+                    <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
+                             ItemsSource="{Binding Databases}"
+                             SelectedItem="{Binding SelectedDatabase}" Margin="0,20" BorderThickness="1" CornerRadius="3"
+                             Padding="2">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="1"
+                                        CornerRadius="1" Padding="2">
+                                    <TextBlock Text="{Binding}" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Panel>
+                <Panel Grid.Column="0" Grid.Row="2"
+                       Margin="5">
+                    <Label BorderBrush="Gray" Margin="0"
+                           Content="Id / Partition">
+                    </Label>
+                    <ListBox x:Name="documents" Margin="0,20"
+                             ItemsSource="{Binding Documents}"
+                             SelectedItem="{Binding SelectedDocument}" BorderThickness="1" CornerRadius="3">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderThickness="1"
+                                        CornerRadius="1" Padding="2">
+                                    <TextBlock Text="{Binding}" />
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Panel>
                 <StackPanel Grid.Column="2" Grid.Row="0"
-                            Spacing="5" Margin="5">
+                            Spacing="5" Margin="5,25">
                     <AutoCompleteBox x:Name="query" ItemsSource="{Binding LastQueries}" Text="{Binding Query}"
                                      FilterMode="StartsWith" Watermark="SELECT * FROM c" />
 
                     <Button Command="{Binding QueryAsyncCommand}"
-                            Content="Query" />
+                            Content="Query" IsEnabled="{Binding !IsBusy}" />
                     <TextBox Background="Transparent" Foreground="#990000"
                              BorderThickness="0"
                              Text="{Binding ErrorMessage}"
@@ -71,18 +73,19 @@
                 </StackPanel>
 
 
-                <Border Grid.Column="2" Grid.Row="2"
-                        CornerRadius="4" Margin="5"
-                        BorderThickness="1" BorderBrush="{DynamicResource SystemBaseMediumColor}">
+                
 
-                    <Grid ColumnDefinitions="*,Auto">
-                        <!--<AvaloniaEdit:TextEditor Text=""
-                                                 ShowLineNumbers="True" />-->
+                    <Grid Grid.Column="2" Grid.Row="2" ColumnDefinitions="*,Auto">
+                        <Border 
+                                               CornerRadius="4" Margin="5"
+                                               BorderThickness="1" BorderBrush="{DynamicResource SystemBaseMediumColor}">
                         <ScrollViewer>
-                            <SelectableTextBlock Text="{Binding FullDocument}" />
+                            
+                            <SelectableTextBlock Text="{Binding FullDocument}"  />
                         </ScrollViewer>
+                        </Border>
                     </Grid>
-                </Border>
+               
             </Grid>
         </TabItem>
         <TabItem Header="Connections" FontSize="16">
@@ -114,5 +117,4 @@
             </StackPanel>
         </TabItem>
     </TabControl>
-
 </Window>
