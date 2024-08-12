@@ -8,6 +8,7 @@ A cross-platform client explorer for Microsoft Azure CosmosDB (Windows, MacOS, L
 - Connect to Azure CosmosDB and display databases and containers
 - Filter CosmosDB documents
 - Create/Read/Update/Delete a document
+- Colored JSON Editor for documents
 - Execute a query and view results and RUs
 - Save the last executed queries (they are saved automatically and available in a dropdown)
 
