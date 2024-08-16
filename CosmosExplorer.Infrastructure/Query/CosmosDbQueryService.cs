@@ -95,19 +95,16 @@ namespace CosmosExplorer.Infrastructure.Query
         {
             query = query.RemoveSpecialCharacters();
             var result = new QueryResultModel<IReadOnlyCollection<dynamic>>();
-            
-            
+       
             var options = new QueryRequestOptions
             {
                 MaxItemCount = maxItems,
             };
             double requestChange = 0;
-            string continuationToken = null;
             List<dynamic> items = [];
             
             using (var resultSet = connectionService.container.GetItemQueryIterator<dynamic>(
                 queryText: query,
-                continuationToken: continuationToken,
                 requestOptions: options))
             {
                 while (resultSet.HasMoreResults && items.Count < maxItems)
@@ -115,14 +112,11 @@ namespace CosmosExplorer.Infrastructure.Query
                     var response = await resultSet.ReadNextAsync(cancellationToken);
 
                     requestChange += response.RequestCharge;
-                    continuationToken = response.ContinuationToken;
-                    items.AddRange( response.Resource.ToArray());
-                    //result.Headers = response.Headers.ToDictionary();
+                     items.AddRange( response.Resource.ToArray());
                 }
             }
 
             result.RequestCharge = requestChange;
-            result.ContinuationToken = continuationToken;
             result.Items = items;
             return result;        
         }

@@ -14,23 +14,35 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Grid RowDefinitions="Auto, *" x:Name="Root">
-        <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}">
+        
+        <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}"  Padding="10">
             <Expander.Header>
                 <Label>Connections  </Label>
             </Expander.Header>
             <Grid DataContext="{Binding }" RowDefinitions="Auto,Auto,Auto,Auto">
-                <DataGrid Grid.Row="0" Margin="20" ItemsSource="{Binding ConnectionStrings}"
+                <Label Grid.Row="0" Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
+                       Content="Start by adding a connection string"  Margin="15 0 0 0">
+                </Label>
+                <Grid Grid.Row="1"  ColumnDefinitions="Auto,Auto,Auto,*" Margin="15 0 0 0">
+                    <TextBox Grid.Column="0" Text="{Binding ConnectionStringName}" Watermark="Connection string name" Width="150"
+                             Margin="5" />
+
+                    <TextBox Grid.Column="1" Text="{Binding ConnectionString}" Watermark="Connection string" Width="400"  Margin="5" />
+                    <Button Grid.Column="2" Command="{Binding AddConnectionStringCommand}" Margin="5"
+                            Content="Add Connection String" />
+                </Grid>
+                <DataGrid Grid.Row="2" Margin="20" ItemsSource="{Binding ConnectionStrings}"
                           SelectedItem="{Binding SelectedConnectionString}" IsVisible="{Binding !AddConnectionString}"
                           IsReadOnly="True"
-                          GridLinesVisibility="All"
+                          GridLinesVisibility="All" 
                           BorderThickness="1" BorderBrush="Gray">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                        <DataGridTextColumn Header="Connection String" Binding="{Binding ConnectionString}" MaxWidth="200" />
+                        <DataGridTextColumn Header="Connection String" Binding="{Binding ConnectionString}" Width="*" />
                         <DataGridTemplateColumn>
                             <DataTemplate>
                             <Button Grid.Column="1"
-                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).RemoveItemCommand}"
+                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).DeleteConnectionStringCommand}"
                                     CommandParameter="{Binding .}">
                                 <PathIcon Data="{DynamicResource DeleteIconData}"
                                           Height="15"
@@ -40,26 +52,13 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                    <Label Grid.Row="1" Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
-                           Content="Start by adding a connection string">
-                    </Label>
-                    <Grid Grid.Row="2"  ColumnDefinitions="Auto,Auto,Auto,*">
-                        
-                        
-                        <TextBox Grid.Column="0" Text="{Binding ConnectionStringName}" Watermark="Connection string name" Width="150"
-                                 Margin="5" />
-
-                        <TextBox Grid.Column="1" Text="{Binding ConnectionString}" Watermark="Connection string" Width="300"  Margin="5" />
-                        <Button Grid.Column="2" Command="{Binding AddConnectionStringCommand}" Margin="5"
-                                Content="Add Connection String" />
-                    </Grid>
-                    <Button Grid.Row="3" Command="{Binding DeleteConnectionStringCommand}" Margin="5"
-                            Content="Delete Selected Connection String" />
+                    
+                    
               
             </Grid>
         </Expander>
-
-        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="4*,12,6*">
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" >
+        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="4*,12,6*" >
             <Grid RowDefinitions="1*,1,2*" ColumnDefinitions="1*">
                 <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
                          ItemsSource="{Binding Databases}"
@@ -99,13 +98,15 @@
                 <TabItem Header="Filter" FontSize="16" Margin="5 0 0 0">
                     <Grid RowDefinitions="Auto,Auto,30,Auto,30,*">
 
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
                         <Label Grid.Row="0" Padding="2 10 6 0 "
                                Content="SELECT * FROM c">
                         </Label>
-                        <AutoCompleteBox Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastQueries}"
+                        <AutoCompleteBox Grid.Column="1" Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastQueries}"
                                                      Text="{Binding Filter}"
                                                      FilterMode="StartsWith" Watermark="WHERE ..."
                                                      HorizontalAlignment="Stretch" />
+                        </Grid>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
@@ -150,15 +151,16 @@
                                            HorizontalScrollBarVisibility="Auto"
                                            VerticalScrollBarVisibility="Visible"
                                            SyntaxHighlighting="Json"
-                                           Document="{Binding FullDocument}" />
+                                           Document="{Binding FullDocumentBox}" />
 
                     </Grid>
                 </TabItem>
                 <TabItem Header="Query" FontSize="16">
                     <Grid RowDefinitions="Auto,Auto,30,Auto,30,*"
                           Margin="5">
-                        <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" 
-                                           Document="{Binding Query}"  ShowLineNumbers="True"
+                        <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" Height="100"
+                                           BorderThickness="1" BorderBrush="Gray"
+                                           Document="{Binding QueryBox}"  ShowLineNumbers="True"
                          />
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
@@ -167,7 +169,7 @@
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                                 <ColumnDefinition Width="*"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Button Margin="3" Grid.Column="0" Command="{Binding QueryCommand}"
+                            <Button Margin="3" Grid.Column="0" Command="{Binding QueryListCommand}"
                                     Content="Execute" />
                         </Grid>
                        
@@ -197,10 +199,11 @@
                                            HorizontalScrollBarVisibility="Auto"
                                            VerticalScrollBarVisibility="Visible"
                                            SyntaxHighlighting="Json"
-                                           Document="{Binding Documentation}" />
+                                           Document="{Binding FullDocumentBox}" />
                     </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
+            </Border>
     </Grid>
 </Window>

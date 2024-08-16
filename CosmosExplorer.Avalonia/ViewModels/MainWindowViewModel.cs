@@ -29,7 +29,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         private DocumentViewModel? selectedDocument;
         private DatabaseViewModel? selectedDatabase;
         private string? filter;
-        private string? query = "SELECT * FROM c";
+        
         private PreferenceConnectionString selectedConnectionString;
         private string? connectionStringName;
         private string fullDocument;
@@ -53,11 +53,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
                                            throw new ArgumentNullException(nameof(cosmosDbDocumentService));
             this.stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
 
-            //DeleteAsyncCommand = ReactiveCommand.CreateFromTask(DeleteAsync);
-            //GetDocumentAsyncCommand = ReactiveCommand.CreateFromTask(GetDocumentAsync);
-            //ChangeConnectionStringCommand = ReactiveCommand.CreateFromTask(ChangeConnectionStringAsync);
-           //  ReLoadAsyncCommand = ReactiveCommand.CreateFromTask(ReloadAsync);
             LoadSettingsAsync();
+            Query = "SELECT * FROM c";
         }
 
         public bool IsBusy
@@ -102,22 +99,27 @@ namespace CosmosExplorer.Avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref connectionStringName, value);
         }
 
-        public string? FullDocument
+        /*public string? FullDocument
         {
             get => fullDocument;
             set => this.RaiseAndSetIfChanged(ref fullDocument, value);
         }
-
+*/
         public string? Filter
         {
             get => filter;
             set => this.RaiseAndSetIfChanged(ref filter, value);
         }
 
-        public string? Query
-        {
-            get => query;
-            set => this.RaiseAndSetIfChanged(ref query, value);
+       
+        public TextDocument QueryBox {
+            get;
+            set;
+        } = new TextDocument(string.Empty);
+
+        public string Query {
+            get { return this.QueryBox.Text; }
+            set { this.QueryBox.Text = value; }
         }
 
         public DocumentViewModel? SelectedDocument
@@ -172,24 +174,16 @@ namespace CosmosExplorer.Avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref addConnectionString, value);
         }
         
-        public TextDocument Documentation {
+        public TextDocument FullDocumentBox {
             get;
             set;
         } = new TextDocument(string.Empty);
 
-        public string DocumentationText {
-            get { return this.Documentation.Text; }
-            set { this.Documentation.Text = value; }
+        public string FullDocument {
+            get { return this.FullDocumentBox.Text; }
+            set { this.FullDocumentBox.Text = value; }
         }
-
-        [RelayCommand]
-        private void RemoveItem(object item)
-        {
-            int a;
-            // Remove the given item from the list
-            //ToDoItems.Remove(item);
-        }
-       
+        
         [RelayCommand]
         private async Task LoadSettingsAsync()
         {
@@ -235,6 +229,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
             IsBusy = false;
         }
+        
         [RelayCommand]
         private async Task AddConnectionStringAsync()
         {
@@ -250,7 +245,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         }
 
         [RelayCommand]
-        private async Task DeleteConnectionStringAsync(int id)
+        private async Task DeleteConnectionStringAsync()
         {
             var box = MessageBoxManager
                 .GetMessageBoxStandard("Delete?", "Are you sure you want to delete the connection string?",
@@ -307,7 +302,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
             IsBusy = false;
         }
         [RelayCommand]
-        private async Task QueryAsync(bool loadmore = false)
+        private async Task QueryListAsync()
+        {
+            await QueryAsync();
+        }
+        private async Task QueryAsync(bool loadmore =false)
         {
             IsBusy = true;
             ErrorMessage = "";
@@ -322,8 +321,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 await SetContainerAsync();
 
                 (var result, int count, double runits) =
-                    (await cosmosDbDocumentService.QueryAsync(query, itemsToRetrieve));
-                DocumentationText = result;
+                    (await cosmosDbDocumentService.QueryAsync(Query, itemsToRetrieve));
+                FullDocument = result;
                 selectedDocument = null;
 
 
