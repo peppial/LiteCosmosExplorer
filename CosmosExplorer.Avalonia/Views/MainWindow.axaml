@@ -8,48 +8,54 @@
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/favicon.ico"
         RequestedThemeVariant="Light"
-        Title="Lite Cosmos Explorer">
+        Title="Lite Cosmos Explorer"
+        xmlns:avedit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit">
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
-    <StackPanel>
-        <Expander VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}">
+    <Grid RowDefinitions="Auto, *" x:Name="Root">
+        
+        <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}"  Padding="10">
             <Expander.Header>
                 <Label>Connections  </Label>
             </Expander.Header>
-            <StackPanel DataContext="{Binding }" Spacing="10">
-                <DataGrid Margin="20" ItemsSource="{Binding ConnectionStrings}"
+            <Grid DataContext="{Binding }" RowDefinitions="Auto,Auto,*">
+                <Label Grid.Row="0" Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
+                       Content="Start by adding a connection string"  Margin="15 0 0 0">
+                </Label>
+                <Grid Grid.Row="1"  ColumnDefinitions="Auto,Auto,Auto,*" Margin="15 0 0 0">
+                    <TextBox Grid.Column="0" Text="{Binding ConnectionStringName}" Watermark="Connection string name" Width="150"
+                             Margin="5" />
+
+                    <TextBox Grid.Column="1" Text="{Binding ConnectionString}" Watermark="Connection string" Width="400"  Margin="5" />
+                    <Button Grid.Column="2" Command="{Binding AddConnectionStringCommand}" Margin="5"
+                            Content="Add Connection String" />
+                </Grid>
+                <DataGrid Grid.Row="2" Margin="20" ItemsSource="{Binding ConnectionStrings}" 
                           SelectedItem="{Binding SelectedConnectionString}" IsVisible="{Binding !AddConnectionString}"
                           IsReadOnly="True"
-                          GridLinesVisibility="All"
+                          GridLinesVisibility="All" 
                           BorderThickness="1" BorderBrush="Gray">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                        <DataGridTextColumn Header="Connection String" Binding="{Binding ConnectionString}" />
+                        <DataGridTextColumn Header="Connection String" Binding="{Binding ConnectionString}" Width="*" />
+                        <DataGridTemplateColumn>
+                            <DataTemplate>
+                            <Button Grid.Column="1"
+                                    Command="{Binding #Root.((vm:MainWindowViewModel)DataContext).DeleteConnectionStringCommand}"
+                                    CommandParameter="{Binding .}">
+                                <PathIcon Data="{DynamicResource DeleteIconData}"
+                                          Height="15"
+                                          Foreground="Red" />
+                            </Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-
-                <Grid RowDefinitions="Auto" ColumnDefinitions="5*, 5*">
-
-                    <StackPanel DataContext="{Binding }" Margin="18">
-                        <Label Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
-                               Content="Start by adding a connection string">
-                        </Label>
-                        <DockPanel>
-                            <TextBox Text="{Binding ConnectionStringName}" Watermark="Connection string name"
-                                     Margin="5" />
-
-                            <TextBox Text="{Binding ConnectionString}" Watermark="Connection string" Margin="5" />
-                            <Button Command="{Binding AddConnectionStringAsyncCommand}" Margin="5"
-                                    Content="Add Connection String" />
-                        </DockPanel>
-                        <Button Command="{Binding DeleteConnectionStringAsyncCommand}" Margin="5"
-                                Content="Delete Selected Connection String" />
-                    </StackPanel>
-                </Grid>
-            </StackPanel>
+            </Grid>
         </Expander>
-        <Grid RowDefinitions="1*" ColumnDefinitions="4*,12,6*">
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" IsVisible="{Binding !AddConnectionString}">
+        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="4*,12,6*" >
             <Grid RowDefinitions="1*,1,2*" ColumnDefinitions="1*">
                 <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
                          ItemsSource="{Binding Databases}"
@@ -87,133 +93,112 @@
             </Grid>
             <TabControl Grid.Column="2" Grid.Row="0">
                 <TabItem Header="Filter" FontSize="16" Margin="5 0 0 0">
-                    <StackPanel Spacing="5" Margin="5">
+                    <Grid RowDefinitions="Auto,Auto,30,Auto,30,*">
 
-                        <DockPanel>
-                            <Label Padding="2 10 6 0 "
-                                   Content="SELECT * FROM c">
-                            </Label>
-                            <AutoCompleteBox Margin="5" x:Name="filter" ItemsSource="{Binding LastQueries}"
-                                             Text="{Binding Filter}"
-                                             FilterMode="StartsWith" Watermark="WHERE ..."
-                                             HorizontalAlignment="Stretch" />
-                        </DockPanel>
-                        <Grid>
+                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                        <Label Grid.Row="0" Padding="2 10 6 0 "
+                               Content="SELECT * FROM c">
+                        </Label>
+                        <AutoCompleteBox Grid.Column="1" Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastQueries}"
+                                                     Text="{Binding Filter}"
+                                                     FilterMode="StartsWith" Watermark="WHERE ..."
+                                                     HorizontalAlignment="Stretch" />
+                        </Grid>
+                        <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
-                            <Button Margin="3" Grid.Column="0" Command="{Binding FilterAsyncCommand}"
+                            <Button Margin="3" Grid.Column="0" Command="{Binding FilterListCommand}"
                                     Content="Filter" />
-                            <Button Margin="3" Grid.Column="1" Command="{Binding NewAsyncCommand}"
+                            <Button Margin="3" Grid.Column="1" Command="{Binding NewCommand}"
                                     Content="New" />
-                            <Button Margin="3" Grid.Column="2" Command="{Binding SaveAsyncCommand}"
+                            <Button Margin="3" Grid.Column="2" Command="{Binding SaveCommand}"
                                     Content="Save" />
-                            <Button Margin="3" Grid.Column="3" Command="{Binding DeleteAsyncCommand}"
+                            <Button Margin="3" Grid.Column="3" Command="{Binding DeleteCommand}"
                                     Content="Delete" />
                         </Grid>
-
-
-                        <TextBox Background="Transparent" Foreground="Green"
-                                 BorderThickness="0"
-                                 Text="{Binding Message}"
-                                 IsReadOnly="True"
-                                 TextWrapping="Wrap" />
-                        <HyperlinkButton Margin="3" Command="{Binding LoadMoreFilterAsyncCommand}"
+                       
+                        <HyperlinkButton Grid.Row="2" Margin="3" Command="{Binding LoadMoreFilterCommand}"
                                          IsVisible="{Binding IsFilterExecuted}">
                             <TextBlock TextDecorations="Underline" Cursor="Hand">Load more</TextBlock>
                         </HyperlinkButton>
-                        <ProgressBar Height="20" Width="20"
-                                     IsIndeterminate="{Binding IsBusy}"
-                                     IsVisible="{Binding IsBusy}"
-                                     Foreground="LightBlue"
-                                     ShowProgressText="False" VerticalAlignment="Top"
-                                     Margin="0 5" />
-                        <TextBox Background="Transparent" Foreground="#990000"
-                                 BorderThickness="0"
-                                 Text="{Binding ErrorMessage}"
-                                 IsReadOnly="True"
-                                 TextWrapping="Wrap" />
-
-
-                        <Border Grid.Column="0"
-                                CornerRadius="4" Margin="5"
-                                IsVisible="{Binding FullDocument, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
-                                BorderThickness="1" BorderBrush="{DynamicResource SystemBaseMediumColor}">
-
-                            <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" BorderBrush="Gray" Padding="2"
-                                       Content="Document">
-                                </Label>
-                                <ScrollViewer Grid.Column="0">
-                                    <TextBox Text="{Binding FullDocument}" />
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-
-                    </StackPanel>
-                </TabItem>
-                <TabItem Header="Query" FontSize="16">
-                    <StackPanel Grid.Column="0" Grid.Row="0"
-                                Spacing="5" Margin="5">
-
-                        <AutoCompleteBox Margin="5" x:Name="query" ItemsSource="{Binding LastQueries}"
-                                         Text="{Binding Query}"
-                                         FilterMode="StartsWith" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                            </Grid.ColumnDefinitions>
-
-                            <Button Margin="3" Grid.Column="0" Command="{Binding ExecuteAsyncCommand}"
-                                    Content="Execute" />
-                        </Grid>
-                        <TextBox Background="Transparent" Foreground="Green" VerticalAlignment="Top"
+                       
+                        <TextBox Grid.Row="3" Background="Transparent" Foreground="Green"
                                  BorderThickness="0"
                                  Text="{Binding Message}"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap" />
-                        <HyperlinkButton Margin="3" Command="{Binding LoadMoreQueryAsyncCommand}"
+                        <TextBox Grid.Row="3" Background="Transparent" Foreground="#990000"
+                                 BorderThickness="0"
+                                 Text="{Binding ErrorMessage}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap" />
+                        <ProgressBar  Grid.Row="3" Height="20" Width="20"
+                                      IsIndeterminate="{Binding IsBusy}"
+                                      IsVisible="{Binding IsBusy}"
+                                      Foreground="LightBlue"
+                                      ShowProgressText="False" VerticalAlignment="Top"
+                                      Margin="0 5" />
+                        <avedit:TextEditor Grid.Column="0" Grid.Row="5"
+                                           BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="5"
+                                           HorizontalScrollBarVisibility="Auto"
+                                           VerticalScrollBarVisibility="Visible"
+                                           SyntaxHighlighting="Json"
+                                           Document="{Binding FullDocumentBox}" />
+
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Query" FontSize="16">
+                    <Grid RowDefinitions="Auto,Auto,30,Auto,30,*"
+                          Margin="5">
+                        <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" Height="100"
+                                           BorderThickness="1" BorderBrush="Gray"
+                                           Document="{Binding QueryBox}"  ShowLineNumbers="True"
+                         />
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                              
+                            </Grid.ColumnDefinitions>
+                            <Button Margin="3" Grid.Column="0" Command="{Binding QueryListCommand}"
+                                    Content="Execute" />
+                        </Grid>
+                       
+                        <HyperlinkButton Grid.Row="2" Margin="3" Command="{Binding LoadMoreQueryCommand}"
                                          IsVisible="{Binding IsQueryExecuted}">
                             <TextBlock TextDecorations="Underline" Cursor="Hand">Load more</TextBlock>
                         </HyperlinkButton>
-
-                        <TextBox Background="Transparent" Foreground="#990000"
+                        <TextBox Grid.Row="3" Background="Transparent" Foreground="Green" VerticalAlignment="Top"
+                                 BorderThickness="0"
+                                 Text="{Binding Message}"
+                                 IsReadOnly="True"
+                                 TextWrapping="Wrap" />
+                        <TextBox Grid.Row="3" Background="Transparent" Foreground="#990000"
                                  BorderThickness="0"
                                  Text="{Binding ErrorMessage}"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap" />
 
-                        <ProgressBar Height="20" Width="20"
+                        <ProgressBar Grid.Row="4" Height="20" Width="20"
                                      IsIndeterminate="{Binding IsBusy}"
                                      IsVisible="{Binding IsBusy}"
                                      Foreground="LightBlue"
                                      ShowProgressText="False" VerticalAlignment="Top"
                                      Margin="0 5" />
-
-
-                        <Border Grid.Column="0" Grid.Row="1"
-                                CornerRadius="4" Margin="5"
-                                BorderThickness="1" BorderBrush="{DynamicResource SystemBaseMediumColor}">
-
-                            <Grid ColumnDefinitions="*,Auto">
-                                <Label Grid.Column="0" BorderBrush="Gray" Padding="2"
-                                       Content="Document">
-                                </Label>
-                                <ScrollViewer Grid.Column="0">
-                                    <TextBox Text="{Binding FullDocument}" />
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-                    </StackPanel>
+                        <avedit:TextEditor Name="DocumentationEditor" Grid.Column="0" Grid.Row="5"
+                                           BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="5"
+                                           HorizontalScrollBarVisibility="Auto"
+                                           VerticalScrollBarVisibility="Visible"
+                                           SyntaxHighlighting="Json"
+                                           Document="{Binding FullDocumentBox}" />
+                    </Grid>
                 </TabItem>
             </TabControl>
         </Grid>
-    </StackPanel>
+            </Border>
+    </Grid>
 </Window>
