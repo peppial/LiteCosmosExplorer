@@ -159,6 +159,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
                     return;
                 selectedConnectionString = value;
                 ChangeConnectionStringAsync();
+                this.RaisePropertyChanged(nameof(SelectedConnectionString));
             }
         }
 
@@ -193,10 +194,14 @@ namespace CosmosExplorer.Avalonia.ViewModels
             AddConnectionString = string.IsNullOrEmpty(stateContainer.ConnectionString);
             if (AddConnectionString) ConnectionsExpanded = true;
 
+            ConnectionStrings = new(this.stateContainer.ConnectionStrings);
+            this.RaisePropertyChanged(nameof(ConnectionStrings));
+            
             stateContainer.LastQueries = loaded.LastQueries;
             SelectedConnectionString = loaded.ConnectionStrings.FirstOrDefault(c => c.Selected);
-
-            ConnectionStrings = new(this.stateContainer.ConnectionStrings);
+            
+            
+            
         }
 
         private async Task ReloadAsync()

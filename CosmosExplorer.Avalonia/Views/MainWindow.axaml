@@ -19,7 +19,7 @@
             <Expander.Header>
                 <Label>Connections  </Label>
             </Expander.Header>
-            <Grid DataContext="{Binding }" RowDefinitions="Auto,Auto,Auto,Auto">
+            <Grid DataContext="{Binding }" RowDefinitions="Auto,Auto,*">
                 <Label Grid.Row="0" Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
                        Content="Start by adding a connection string"  Margin="15 0 0 0">
                 </Label>
@@ -31,7 +31,7 @@
                     <Button Grid.Column="2" Command="{Binding AddConnectionStringCommand}" Margin="5"
                             Content="Add Connection String" />
                 </Grid>
-                <DataGrid Grid.Row="2" Margin="20" ItemsSource="{Binding ConnectionStrings}"
+                <DataGrid Grid.Row="2" Margin="20" ItemsSource="{Binding ConnectionStrings}" 
                           SelectedItem="{Binding SelectedConnectionString}" IsVisible="{Binding !AddConnectionString}"
                           IsReadOnly="True"
                           GridLinesVisibility="All" 
@@ -52,12 +52,9 @@
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
-                    
-                    
-              
             </Grid>
         </Expander>
-        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" >
+        <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" IsVisible="{Binding !AddConnectionString}">
         <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="4*,12,6*" >
             <Grid RowDefinitions="1*,1,2*" ColumnDefinitions="1*">
                 <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
@@ -109,10 +106,10 @@
                         </Grid>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
 
                             <Button Margin="3" Grid.Column="0" Command="{Binding FilterListCommand}"
@@ -164,10 +161,8 @@
                          />
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
-                                <ColumnDefinition Width="*"></ColumnDefinition>
+                                <ColumnDefinition Width="100"></ColumnDefinition>
+                              
                             </Grid.ColumnDefinitions>
                             <Button Margin="3" Grid.Column="0" Command="{Binding QueryListCommand}"
                                     Content="Execute" />
