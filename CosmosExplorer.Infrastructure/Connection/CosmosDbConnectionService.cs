@@ -38,7 +38,9 @@ public class CosmosDbConnectionService : IConnectionService, IDisposable
     {
         if (cosmosClient == null || this.connectionString != connectionString )
         {
-            cosmosClient = new Microsoft.Azure.Cosmos.CosmosClient(connectionString);
+            if(this.connectionString != connectionString) cosmosClient?.Dispose();
+            
+            cosmosClient = new CosmosClient(connectionString);
             this.connectionString = connectionString;
         }
         var databaseProperties = cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>();
