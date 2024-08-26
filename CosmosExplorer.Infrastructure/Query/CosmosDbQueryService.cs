@@ -8,6 +8,7 @@ namespace CosmosExplorer.Infrastructure.Query
 {
     public class CosmosDbQueryService : IQueryService
     {
+        private const int maxRequestRU = 5000;
         private readonly IConnectionService connectionService;
 
         public CosmosDbQueryService(IConnectionService connectionService)
@@ -81,7 +82,11 @@ namespace CosmosExplorer.Infrastructure.Query
                     requestChange += response.RequestCharge;
                     continuationToken = response.ContinuationToken;
                     items.AddRange( response.Resource.ToArray());
-                    //result.Headers = response.Headers.ToDictionary();
+                   
+                    if (requestChange > maxRequestRU)
+                    {
+                        throw new Exception($"The request charge has exceeded the maxiumum RU of {maxRequestRU}");
+                    }
                 }
             }
 
