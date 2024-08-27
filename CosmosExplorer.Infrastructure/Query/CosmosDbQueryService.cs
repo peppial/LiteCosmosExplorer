@@ -85,7 +85,7 @@ namespace CosmosExplorer.Infrastructure.Query
                    
                     if (requestChange > maxRequestRU)
                     {
-                        throw new Exception($"The request charge has exceeded the maxiumum RU of {maxRequestRU}");
+                        throw new Exception($"The request charge has exceeded the maxiumum of {maxRequestRU} RU default limit");
                     }
                 }
             }
