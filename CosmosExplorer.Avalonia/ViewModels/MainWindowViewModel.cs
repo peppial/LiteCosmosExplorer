@@ -417,6 +417,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             catch (Exception e)
             {
                 ErrorMessage = e.Message;
+                Message = "";
             }
 
             IsBusy = false;
@@ -437,6 +438,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             catch (Exception e)
             {
                 ErrorMessage = e.Message;
+                Message = "";
             }
 
             Message = (selectedDocument is null) ? "Document is added." : "Document is updated.";
@@ -466,6 +468,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             catch (Exception e)
             {
                 ErrorMessage = e.Message;
+                Message = "";
             }
 
             IsBusy = false;
