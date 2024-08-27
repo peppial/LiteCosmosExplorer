@@ -163,6 +163,7 @@
                           Margin="5">
                         <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" Height="100"
                                            BorderThickness="1" BorderBrush="Gray"
+                                           SyntaxHighlighting="TSQL"
                                            Document="{Binding QueryBox}"  ShowLineNumbers="True"
                          />
                         <Grid Grid.Row="1">
