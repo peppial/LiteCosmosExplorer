@@ -5,8 +5,13 @@ namespace CosmosExplorer.Infrastructure.Extensions;
 
 public class CosmosExtensions
 {
- 
-    public static PartitionKey GetPartitionKey(string partitionName) => new (partitionName);
+
+    public static PartitionKey GetPartitionKey(string partitionName)
+    {
+         if (partitionName is null) return PartitionKey.None;
+            
+         return new (partitionName);
+    } 
     public static PartitionKey GetPartitionKey(Partition partition)
     {
         PartitionKeyBuilder builder = new();
