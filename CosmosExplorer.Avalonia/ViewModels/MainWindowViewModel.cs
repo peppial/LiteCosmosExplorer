@@ -32,11 +32,12 @@ namespace CosmosExplorer.Avalonia.ViewModels
         
         private PreferenceConnectionString selectedConnectionString;
         private string? connectionStringName;
-        private string fullDocument;
         private bool connectionsExpanded;
         private bool addConnectionString;
         private int itemsToRetrieve = 100;
         private readonly int itemsBatch = 100;
+        private readonly int maxSavedQueries = 10;
+
         private bool isFilterExecuted = false;
         private bool isQueryExecuted = false;
         public ObservableCollection<DocumentViewModel> Documents { get; set; } = [];
@@ -98,13 +99,6 @@ namespace CosmosExplorer.Avalonia.ViewModels
             get => connectionStringName;
             set => this.RaiseAndSetIfChanged(ref connectionStringName, value);
         }
-
-        /*public string? FullDocument
-        {
-            get => fullDocument;
-            set => this.RaiseAndSetIfChanged(ref fullDocument, value);
-        }
-*/
         public string? Filter
         {
             get => filter;
@@ -199,9 +193,6 @@ namespace CosmosExplorer.Avalonia.ViewModels
             
             stateContainer.LastQueries = loaded.LastQueries;
             SelectedConnectionString = loaded.ConnectionStrings.FirstOrDefault(c => c.Selected);
-            
-            
-            
         }
 
         private async Task ReloadAsync()
@@ -311,7 +302,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         {
             await QueryAsync();
         }
-        private async Task QueryAsync(bool loadmore =false)
+        private async Task QueryAsync(bool loadmore = false)
         {
             IsBusy = true;
             ErrorMessage = "";
@@ -329,7 +320,6 @@ namespace CosmosExplorer.Avalonia.ViewModels
                     (await cosmosDbDocumentService.QueryAsync(Query, itemsToRetrieve));
                 FullDocument = result;
                 selectedDocument = null;
-
 
                 Message = $"{count} items retrieved, {runits:0.##} RUs";
             }
@@ -422,6 +412,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
             IsBusy = false;
         }
+        
         [RelayCommand]
         private async Task SaveAsync()
         {
@@ -488,7 +479,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             if (itemToRemove is not null) list.Remove(itemToRemove);
 
             list.Insert(0, item);
-            if (list.Count > 10) list.RemoveAt(10);
+            if (list.Count > maxSavedQueries) list.RemoveAt(maxSavedQueries);
             stateContainer.LastQueries = list;
             ReloadLastQueries();
         }
