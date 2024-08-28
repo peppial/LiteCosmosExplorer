@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AvaloniaEdit.Document;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CosmosExplorer.Core;
 using CosmosExplorer.Core.Models;
@@ -43,7 +44,10 @@ namespace CosmosExplorer.Avalonia.ViewModels
         public ObservableCollection<DocumentViewModel> Documents { get; set; } = [];
         public ObservableCollection<DatabaseViewModel> Databases { get; set; } = [];
         public ObservableCollection<PreferenceConnectionString> ConnectionStrings { get; set; } = [];
+        public ObservableCollection<string> LastFilters { get; set; } = [];
         public ObservableCollection<string> LastQueries { get; set; } = [];
+
+        public bool hasLastQueries;
 
         public MainWindowViewModel(IUserSettingsService userSettingsService,
             ICosmosDBDocumentService cosmosDbDocumentService, IStateContainer stateContainer)
@@ -55,7 +59,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
             this.stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
 
             LoadSettingsAsync();
-            Query = "SELECT * FROM c";
+            QueryBox = new TextDocument("SELECT * FROM c");
+            
         }
 
         public bool IsBusy
@@ -68,6 +73,12 @@ namespace CosmosExplorer.Avalonia.ViewModels
         {
             get => isFilterExecuted;
             set => this.RaiseAndSetIfChanged(ref isFilterExecuted, value);
+        }
+        
+        public bool HasLastQueries
+        {
+            get => hasLastQueries;
+            set => this.RaiseAndSetIfChanged(ref hasLastQueries, value);
         }
 
         public bool IsQueryExecuted
@@ -191,7 +202,9 @@ namespace CosmosExplorer.Avalonia.ViewModels
             ConnectionStrings = new(this.stateContainer.ConnectionStrings);
             this.RaisePropertyChanged(nameof(ConnectionStrings));
             
+            stateContainer.LastFilters = loaded.LastFilters;
             stateContainer.LastQueries = loaded.LastQueries;
+            
             SelectedConnectionString = loaded.ConnectionStrings.FirstOrDefault(c => c.Selected);
         }
 
@@ -284,7 +297,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 selectedDocument = null;
                 Documents.Clear();
                 Documents.AddRange(result.Select(x => new DocumentViewModel(x.Item1, x.Item2)));
-                AddLastQuery(filter);
+                AddLastFilter(filter);
                 await userSettingsService.SaveSettingsAsync(stateContainer);
                 Message = $"{count} items retrieved, {runits:0.##} RUs";
             }
@@ -320,7 +333,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
                     (await cosmosDbDocumentService.QueryAsync(Query, itemsToRetrieve));
                 FullDocument = result;
                 selectedDocument = null;
-
+                AddLastQuery(Query);
+                await userSettingsService.SaveSettingsAsync(stateContainer);
                 Message = $"{count} items retrieved, {runits:0.##} RUs";
             }
             catch (Exception e)
@@ -435,7 +449,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
             Message = (selectedDocument is null) ? "Document is added." : "Document is updated.";
             IsBusy = false;
         }
-        
+        [RelayCommand]
+        private async Task SetQueryAsync(string item)
+        {
+            Query = item;
+        }
         [RelayCommand]
         private async Task DeleteAsync()
         {
@@ -465,6 +483,25 @@ namespace CosmosExplorer.Avalonia.ViewModels
             IsBusy = false;
         }
 
+        private void AddLastFilter(string query)
+        {
+            if (string.IsNullOrEmpty(query)) return;
+            var list = stateContainer.LastFilters;
+            if (list.Count > 0 && list[0].Query == query) return;
+            var item = new LastQuery(query, stateContainer.ConnectionString, stateContainer.Database,
+                stateContainer.Container);
+            var itemToRemove = list.FirstOrDefault(q => q.Query == query && q.Database == stateContainer.Database
+                                                                         && q.Container == stateContainer.Container &&
+                                                                         q.ConnectionString ==
+                                                                         stateContainer.ConnectionString);
+            if (itemToRemove is not null) list.Remove(itemToRemove);
+
+            list.Insert(0, item);
+            if (list.Count > maxSavedQueries) list.RemoveAt(maxSavedQueries);
+            stateContainer.LastFilters = list;
+            ReloadLastFilters();
+        }
+        
         private void AddLastQuery(string query)
         {
             if (string.IsNullOrEmpty(query)) return;
@@ -516,6 +553,19 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
         }
 
+        private void ReloadLastFilters()
+        {
+            if (selectedDatabase is null) return;
+            LastFilters.Clear();
+            LastFilters.Add(stateContainer.LastFilters.Where(c =>
+                c.Database == selectedDatabase.Database
+                && c.Container == selectedDatabase.Container
+                && c.ConnectionString == SelectedConnectionString.ConnectionString
+            ).Select(x => x.Query).ToArray());
+
+            HasLastQueries = LastFilters.Any();
+        }
+        
         private void ReloadLastQueries()
         {
             if (selectedDatabase is null) return;
@@ -525,6 +575,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 && c.Container == selectedDatabase.Container
                 && c.ConnectionString == SelectedConnectionString.ConnectionString
             ).Select(x => x.Query).ToArray());
+
+            HasLastQueries = LastQueries.Any();
         }
     }
 }

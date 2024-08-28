@@ -101,9 +101,9 @@
                         <Label Grid.Row="0" Padding="2 10 6 0 "
                                Content="SELECT * FROM c">
                         </Label>
-                        <AutoCompleteBox Grid.Column="1" Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastQueries}"
-                                                     Text="{Binding Filter}" 
-                                                     FilterMode="StartsWith" Watermark="WHERE ..."
+                        <AutoCompleteBox Grid.Column="1" Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastFilters}"
+                                                     Text="{Binding Filter}"  
+                                                     FilterMode="StartsWith" Watermark="Type a query predicate (e.g., WHERE c.id=´1´), or choose one from the drop down list, or leave empty to query all documents."
                                                      HorizontalAlignment="Stretch"   >
                             <i:Interaction.Behaviors>
                                 <bh:AutoCompleteZeroMinimumPrefixLengthDropdownBehaviour/>
@@ -155,7 +155,6 @@
                                            VerticalScrollBarVisibility="Visible"
                                            SyntaxHighlighting="Json"
                                            Document="{Binding FullDocumentBox}" />
-
                     </Grid>
                 </TabItem>
                 <TabItem Header="Query" FontSize="16">
@@ -166,6 +165,23 @@
                                            SyntaxHighlighting="TSQL"
                                            Document="{Binding QueryBox}"  ShowLineNumbers="True"
                          />
+                        <Button Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Width="50" HorizontalAlignment="Right" IsVisible="{Binding HasLastQueries}">
+                            <Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                            <Button.Flyout >
+                                
+                               
+                                <MenuFlyout ItemsSource="{Binding LastQueries}">
+                                    <MenuFlyout.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" >
+                                           
+                                            <Setter Property="Command" Value="{Binding #Root.((vm:MainWindowViewModel)DataContext).SetQueryCommand}"/>
+                                            <Setter Property="CommandParameter" Value="{Binding . }"/>
+          
+                                        </ControlTheme>
+                                    </MenuFlyout.ItemContainerTheme>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="100"></ColumnDefinition>

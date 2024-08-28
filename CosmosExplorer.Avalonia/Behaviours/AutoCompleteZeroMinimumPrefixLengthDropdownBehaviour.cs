@@ -135,7 +135,7 @@ namespace CosmosExplorer.Avalonia.Behaviours
         {
             if (AssociatedObject != null)
             {
-                //CreateDropdownButton();
+                CreateDropdownButton();
             }
         }
     }
