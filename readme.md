@@ -24,15 +24,17 @@ You can allow windows defender to start this application:
 - click on More Info -> Run anyway
 
 ## macOS
+- Make CosmosExplorer.Avalonia file executable by:
+
+  chmod +x LiteCosmosExplorer
+
 - Right-click -> Open
 
 You can allow macOS to start this application by enabling Developer tools for Terminal:
 
 System Preferences -> Security & Privacy -> Privacy, select "Developer Tools" on the left, check terminal on the right.
 
-You can make CosmosExplorer.Avalonia file executable by:
 
-- chmod +x LiteCosmosExplorer
 
 ## Linux (CentOS, Debian, Fedora, Ubuntu and derivatives)
 - Right-click -> Run
