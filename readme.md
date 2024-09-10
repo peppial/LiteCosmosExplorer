@@ -32,7 +32,7 @@ System Preferences -> Security & Privacy -> Privacy, select "Developer Tools" on
 
 You can make CosmosExplorer.Avalonia file executable by:
 
-- chmod +x CosmosExplorer.Avalonia
+- chmod +x LiteCosmosExplorer
 
 ## Linux (CentOS, Debian, Fedora, Ubuntu and derivatives)
 - Right-click -> Run
