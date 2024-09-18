@@ -23,8 +23,7 @@
             </Expander.Header>
             <Grid DataContext="{Binding }" RowDefinitions="Auto,Auto,*">
                 <Label Grid.Row="0" Foreground="SeaGreen" IsVisible="{Binding AddConnectionString}"
-                       Content="Start by adding a connection string"  Margin="15 0 0 0">
-                </Label>
+                       Content="Start by adding a connection string"  Margin="15 0 0 0" />
                 <Grid Grid.Row="1"  ColumnDefinitions="Auto,Auto,Auto,*" Margin="15 0 0 0">
                     <TextBox Grid.Column="0" Text="{Binding ConnectionStringName}" Watermark="Connection string name" Width="150"
                              Margin="5" />
@@ -75,8 +74,7 @@
                 <Grid Grid.Column="0" Grid.Row="2" ColumnDefinitions="*" RowDefinitions="30,1*">
                     <Label Grid.Row="0" BorderBrush="Gray" Padding="2" Margin="5"
                            IsVisible="{Binding ItemCount, ElementName=documents}"
-                           Content="Id / partition">
-                    </Label>
+                           Content="Id / partition" />
                     <ListBox x:Name="documents" IsVisible="{Binding ItemCount, ElementName=documents}" Grid.Column="0"
                              Grid.Row="1"
                              ItemsSource="{Binding Documents}"
@@ -94,28 +92,39 @@
                 </Grid>
             </Grid>
             <TabControl Grid.Column="2" Grid.Row="0">
-                <TabItem Header="Filter" FontSize="16" Margin="5 0 0 0">
-                    <Grid RowDefinitions="Auto,Auto,30,Auto,*">
-
-                        <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
-                        <Label Grid.Row="0" Padding="2 10 6 0 "
-                               Content="SELECT * FROM c">
-                        </Label>
-                        <AutoCompleteBox Grid.Column="1" Grid.Row="0" Margin="5" x:Name="filter" ItemsSource="{Binding LastFilters}"
-                                                     Text="{Binding Filter}"  
-                                                     FilterMode="StartsWith" Watermark="Type a query predicate (e.g., WHERE c.id=´1´), or choose one from the drop down list, or leave empty to query all documents."
-                                                     HorizontalAlignment="Stretch"   >
-                            <i:Interaction.Behaviors>
-                                <bh:AutoCompleteZeroMinimumPrefixLengthDropdownBehaviour/>
-                            </i:Interaction.Behaviors>
-                        </AutoCompleteBox>
-                        </Grid>
-                        <Grid Grid.Row="1">
+                <TabItem Header="Filter" FontSize="16" Margin="5 0 0 5">
+                    <Grid RowDefinitions="Auto,Auto,Auto,30,Auto,*"
+                          Margin="5">
+               
+                        <TextBlock Grid.Row="0" Padding="2 10 6 0 ">
+                            <Run Text="SELECT * FROM c"/>
+                            <LineBreak/>
+                            <Run Foreground="Gray"  Text="Type a query predicate (e.g., WHERE c.id='1'), or leave empty to query all documents."/>
+                        </TextBlock>
+                        <avedit:TextEditor Grid.Row="1" Margin="5" x:Name="filter" Height="100"
+                                           BorderThickness="1" BorderBrush="Gray"
+                                           SyntaxHighlighting="TSQL"
+                                           Document="{Binding FilterBox}"  ShowLineNumbers="False"
+                        />
+                        <Button Grid.Row="1" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Width="50" HorizontalAlignment="Right" IsVisible="{Binding HasLastQueries}">
+                            <Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
+                            <Button.Flyout >
+                                <MenuFlyout ItemsSource="{Binding LastFilters}">
+                                    <MenuFlyout.ItemContainerTheme>
+                                        <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" >
+                                            <Setter Property="Command" Value="{Binding #Root.((vm:MainWindowViewModel)DataContext).SetFilterCommand}"/>
+                                            <Setter Property="CommandParameter" Value="{Binding . }"/>
+                                        </ControlTheme>
+                                    </MenuFlyout.ItemContainerTheme>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Grid Grid.Row="2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="100" />
+                                <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
 
                             <Button Margin="3" Grid.Column="0" Command="{Binding FilterListCommand}"
@@ -128,28 +137,28 @@
                                     Content="Delete" />
                         </Grid>
                        
-                        <HyperlinkButton Grid.Row="2" Margin="0" Command="{Binding LoadMoreFilterCommand}"
+                        <HyperlinkButton Grid.Row="3" Margin="0" Command="{Binding LoadMoreFilterCommand}"
                                          IsVisible="{Binding IsFilterExecuted}">
                             <TextBlock TextDecorations="Underline" Cursor="Hand" Foreground="#005A9E" FontWeight="Bold">Load more</TextBlock>
                         </HyperlinkButton>
                        
-                        <TextBox Grid.Row="3" Background="Transparent" Foreground="Green"
+                        <TextBox Grid.Row="4" Background="Transparent" Foreground="Green"
                                  BorderThickness="0"
                                  Text="{Binding Message}"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap" />
-                        <TextBox Grid.Row="3" Background="Transparent" Foreground="#990000"
+                        <TextBox Grid.Row="4" Background="Transparent" Foreground="#990000"
                                  BorderThickness="0"
                                  Text="{Binding ErrorMessage}"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap" />
-                        <ProgressBar  Grid.Row="3" Height="20" Width="20"
+                        <ProgressBar  Grid.Row="4" Height="20" Width="20"
                                       IsIndeterminate="{Binding IsBusy}"
                                       IsVisible="{Binding IsBusy}"
                                       Foreground="LightBlue"
                                       ShowProgressText="False" VerticalAlignment="Top"
                                       Margin="0 0" />
-                        <avedit:TextEditor Grid.Column="0" Grid.Row="4"
+                        <avedit:TextEditor Grid.Column="0" Grid.Row="5" 
                                            BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="5"
                                            HorizontalScrollBarVisibility="Auto"
                                            VerticalScrollBarVisibility="Visible"
@@ -163,20 +172,16 @@
                         <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" Height="100"
                                            BorderThickness="1" BorderBrush="Gray"
                                            SyntaxHighlighting="TSQL"
-                                           Document="{Binding QueryBox}"  ShowLineNumbers="True"
+                                           Document="{Binding QueryBox}"  ShowLineNumbers="False"
                          />
                         <Button Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Width="50" HorizontalAlignment="Right" IsVisible="{Binding HasLastQueries}">
                             <Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
                             <Button.Flyout >
-                                
-                               
-                                <MenuFlyout ItemsSource="{Binding LastQueries}">
+                               <MenuFlyout ItemsSource="{Binding LastQueries}">
                                     <MenuFlyout.ItemContainerTheme>
                                         <ControlTheme TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}" >
-                                           
                                             <Setter Property="Command" Value="{Binding #Root.((vm:MainWindowViewModel)DataContext).SetQueryCommand}"/>
                                             <Setter Property="CommandParameter" Value="{Binding . }"/>
-          
                                         </ControlTheme>
                                     </MenuFlyout.ItemContainerTheme>
                                 </MenuFlyout>
@@ -184,13 +189,11 @@
                         </Button>
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"></ColumnDefinition>
-                              
+                                <ColumnDefinition Width="100" />
                             </Grid.ColumnDefinitions>
                             <Button Margin="3" Grid.Column="0" Command="{Binding QueryListCommand}"
                                     Content="Execute" />
                         </Grid>
-                       
                         <HyperlinkButton Grid.Row="2" Margin="0" Command="{Binding LoadMoreQueryCommand}"
                                          IsVisible="{Binding IsQueryExecuted}">
                             <TextBlock TextDecorations="Underline" Cursor="Hand" Foreground="#005A9E" FontWeight="Bold">Load more</TextBlock>
@@ -205,7 +208,6 @@
                                  Text="{Binding ErrorMessage}"
                                  IsReadOnly="True"
                                  TextWrapping="Wrap" />
-
                         <ProgressBar Grid.Row="3" Height="20" Width="20"
                                      IsIndeterminate="{Binding IsBusy}"
                                      IsVisible="{Binding IsBusy}"
