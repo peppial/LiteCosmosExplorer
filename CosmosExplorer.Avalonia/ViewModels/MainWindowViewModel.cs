@@ -110,13 +110,15 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
         public string? Filter
         {
-            get => filter;
-            set => this.RaiseAndSetIfChanged(ref filter, value);
+            get { return this.FilterBox.Text; }
+            set { this.FilterBox.Text = value; }
         }
 
 
         public TextDocument QueryBox { get; set; } = new TextDocument(string.Empty);
+        public TextDocument FilterBox { get; set; } = new TextDocument(string.Empty);
 
+        
         public string Query
         {
             get { return this.QueryBox.Text; }
@@ -146,6 +148,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 selectedDatabase = value;
                 Documents.Clear();
                 FullDocument = "";
+                ReloadLastFilters();
                 ReloadLastQueries();
                 this.RaiseAndSetIfChanged(ref selectedDatabase, value);
             }
@@ -287,11 +290,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 await SetContainerAsync();
 
                 (var result, int count, double runits) =
-                    (await cosmosDbDocumentService.FilterAsync(filter, itemsToRetrieve));
+                    (await cosmosDbDocumentService.FilterAsync(Filter, itemsToRetrieve));
                 selectedDocument = null;
                 Documents.Clear();
                 Documents.AddRange(result.Select(x => new DocumentViewModel(x.Item1, x.Item2)));
-                AddLastFilter(filter);
+                AddLastFilter(Filter);
                 await userSettingsService.SaveSettingsAsync(stateContainer);
                 Message = $"{count} items retrieved, {runits:0.##} RUs";
             }
@@ -452,6 +455,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
         private async Task SetQueryAsync(string item)
         {
             Query = item;
+        }
+        [RelayCommand]
+        private async Task SetFilterAsync(string item)
+        {
+            Filter = item;
         }
 
         [RelayCommand]
