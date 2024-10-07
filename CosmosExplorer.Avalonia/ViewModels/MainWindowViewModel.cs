@@ -45,6 +45,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         public ObservableCollection<string> LastFilters { get; set; } = [];
         public ObservableCollection<string> LastQueries { get; set; } = [];
 
+        public bool hasLastFilters;
         public bool hasLastQueries;
 
         public MainWindowViewModel(IUserSettingsService userSettingsService,
@@ -76,6 +77,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
         {
             get => hasLastQueries;
             set => this.RaiseAndSetIfChanged(ref hasLastQueries, value);
+        }
+        public bool HasLastFilters
+        {
+            get => hasLastFilters;
+            set => this.RaiseAndSetIfChanged(ref hasLastFilters, value);
         }
 
         public bool IsQueryExecuted
@@ -201,39 +207,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
             stateContainer.LastFilters = loaded.LastFilters;
             stateContainer.LastQueries = loaded.LastQueries;
-
+            
             SelectedConnectionString = loaded.ConnectionStrings.FirstOrDefault(c => c.Selected);
-        }
-
-        private async Task ReloadAsync()
-        {
-            IsBusy = true;
-            ErrorMessage = "";
-
-            Databases.Clear();
-            try
-            {
-                var databases = await cosmosDbDocumentService.GetDatabasesAsync();
-
-                foreach (var database in databases.OrderBy(x => x.Id))
-                {
-                    foreach (var container in database.Containers.OrderBy(x => x.Id))
-                    {
-                        Databases.Add((database.Id, container.Id));
-                    }
-                }
-
-                if (Databases.Count > 0) SelectedDatabase = Databases[0];
-                this.RaisePropertyChanged(nameof(SelectedDatabase));
-
-                ReloadLastQueries();
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.Message;
-            }
-
-            IsBusy = false;
         }
 
         [RelayCommand]
@@ -313,39 +288,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         {
             await QueryAsync();
         }
-
-        private async Task QueryAsync(bool loadmore = false)
-        {
-            IsBusy = true;
-            ErrorMessage = "";
-            if (!loadmore)
-            {
-                IsQueryExecuted = false;
-                itemsToRetrieve = itemsBatch;
-            }
-
-            try
-            {
-                await SetContainerAsync();
-
-                (var result, int count, double runits) =
-                    (await cosmosDbDocumentService.QueryAsync(Query, itemsToRetrieve));
-                FullDocument = result;
-                selectedDocument = null;
-                AddLastQuery(Query);
-                await userSettingsService.SaveSettingsAsync(stateContainer);
-                Message = $"{count} items retrieved, {runits:0.##} RUs";
-            }
-            catch (Exception e)
-            {
-                ErrorMessage = e.Message;
-                Message = "";
-            }
-
-            IsQueryExecuted = true;
-            IsBusy = false;
-        }
-
+        
         [RelayCommand]
         private async Task LoadMoreFilterAsync()
         {
@@ -359,12 +302,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             itemsToRetrieve += itemsBatch;
             await QueryAsync(true);
         }
-
-        private async Task SetContainerAsync()
-        {
-            await cosmosDbDocumentService.ChangeContainerAsync(selectedDatabase?.Database, selectedDatabase?.Container);
-        }
-
+        
         [RelayCommand]
         private async Task NewAsync()
         {
@@ -490,20 +428,86 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
             IsBusy = false;
         }
+        private async Task ReloadAsync()
+        {
+            IsBusy = true;
+            ErrorMessage = "";
 
+            Databases.Clear();
+            try
+            {
+                var databases = await cosmosDbDocumentService.GetDatabasesAsync();
+
+                foreach (var database in databases.OrderBy(x => x.Id))
+                {
+                    foreach (var container in database.Containers.OrderBy(x => x.Id))
+                    {
+                        Databases.Add((database.Id, container.Id));
+                    }
+                }
+
+                if (Databases.Count > 0) SelectedDatabase = Databases[0];
+                this.RaisePropertyChanged(nameof(SelectedDatabase));
+
+                ReloadLastQueries();
+            }
+            catch (Exception e)
+            {
+                ErrorMessage = e.Message;
+            }
+
+            IsBusy = false;
+        }
+
+        private async Task QueryAsync(bool loadmore = false)
+        {
+            IsBusy = true;
+            ErrorMessage = "";
+            if (!loadmore)
+            {
+                IsQueryExecuted = false;
+                itemsToRetrieve = itemsBatch;
+            }
+
+            try
+            {
+                await SetContainerAsync();
+
+                (var result, int count, double runits) =
+                    (await cosmosDbDocumentService.QueryAsync(Query, itemsToRetrieve));
+                FullDocument = result;
+                selectedDocument = null;
+                AddLastQuery(Query);
+                await userSettingsService.SaveSettingsAsync(stateContainer);
+                Message = $"{count} items retrieved, {runits:0.##} RUs";
+            }
+            catch (Exception e)
+            {
+                ErrorMessage = e.Message;
+                Message = "";
+            }
+
+            IsQueryExecuted = true;
+            IsBusy = false;
+        }
+
+        private async Task SetContainerAsync()
+        {
+            await cosmosDbDocumentService.ChangeContainerAsync(selectedDatabase?.Database, selectedDatabase?.Container);
+        }
         private void AddLastFilter(string query)
         {
             if (string.IsNullOrEmpty(query)) return;
             var list = stateContainer.LastFilters;
-            if (list.Count > 0 && list[0].Query == query) return;
-            var item = new LastQuery(query, stateContainer.ConnectionString, stateContainer.Database,
-                stateContainer.Container);
+           
+            
             var itemToRemove = list.FirstOrDefault(q => q.Query == query && q.Database == stateContainer.Database
                                                                          && q.Container == stateContainer.Container &&
                                                                          q.ConnectionString ==
                                                                          stateContainer.ConnectionString);
             if (itemToRemove is not null) list.Remove(itemToRemove);
-
+            var item = new LastQuery(query, stateContainer.ConnectionString, stateContainer.Database,
+                stateContainer.Container);
             list.Insert(0, item);
             if (list.Count > maxSavedQueries) list.RemoveAt(maxSavedQueries);
             stateContainer.LastFilters = list;
@@ -514,15 +518,14 @@ namespace CosmosExplorer.Avalonia.ViewModels
         {
             if (string.IsNullOrEmpty(query)) return;
             var list = stateContainer.LastQueries;
-            if (list.Count > 0 && list[0].Query == query) return;
-            var item = new LastQuery(query, stateContainer.ConnectionString, stateContainer.Database,
-                stateContainer.Container);
+           
             var itemToRemove = list.FirstOrDefault(q => q.Query == query && q.Database == stateContainer.Database
                                                                          && q.Container == stateContainer.Container &&
                                                                          q.ConnectionString ==
                                                                          stateContainer.ConnectionString);
             if (itemToRemove is not null) list.Remove(itemToRemove);
-
+            var item = new LastQuery(query, stateContainer.ConnectionString, stateContainer.Database,
+                stateContainer.Container);
             list.Insert(0, item);
             if (list.Count > maxSavedQueries) list.RemoveAt(maxSavedQueries);
             stateContainer.LastQueries = list;
@@ -571,7 +574,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 && c.ConnectionString == SelectedConnectionString.ConnectionString
             ).Select(x => x.Query).ToArray());
 
-            HasLastQueries = LastFilters.Any();
+            HasLastFilters = LastFilters.Any();
         }
 
         private void ReloadLastQueries()

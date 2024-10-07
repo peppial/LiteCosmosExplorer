@@ -16,7 +16,6 @@
         <vm:MainWindowViewModel />
     </Design.DataContext>
     <Grid RowDefinitions="Auto, *" x:Name="Root">
-        
         <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}"  Padding="10">
             <Expander.Header>
                 <Label>Connections  </Label>
@@ -56,8 +55,8 @@
             </Grid>
         </Expander>
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" IsVisible="{Binding !AddConnectionString}">
-        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="4*,12,6*" >
-            <Grid RowDefinitions="1*,1,2*" ColumnDefinitions="1*">
+        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="5*,2,6*" >
+            <Grid  RowDefinitions="1*,4,2*" >
                 <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
                          ItemsSource="{Binding Databases}"
                          SelectedItem="{Binding SelectedDatabase}" Margin="5" BorderThickness="1" CornerRadius="3"
@@ -91,22 +90,24 @@
                     </ListBox>
                 </Grid>
             </Grid>
-            <TabControl Grid.Column="2" Grid.Row="0">
-                <TabItem Header="Filter" FontSize="16" Margin="5 0 0 5">
-                    <Grid RowDefinitions="Auto,Auto,Auto,30,Auto,*"
+            <GridSplitter Grid.Column="1" Grid.Row="0"  Background="DarkGray"  ResizeDirection="Columns"/>
+            <TabControl Grid.Column="2" Grid.Row="0" >
+                <TabItem Header="Filter" FontSize="16" Margin="5 0 0 5" >
+                    <Grid RowDefinitions="Auto, 2, *">
+                        <Grid RowDefinitions="Auto,*,Auto,30,Auto"
                           Margin="5">
-               
                         <TextBlock Grid.Row="0" Padding="2 10 6 0 ">
                             <Run Text="SELECT * FROM c"/>
                             <LineBreak/>
-                            <Run Foreground="Gray"  Text="Type a query predicate (e.g., WHERE c.id='1'), or leave empty to query all documents."/>
+                            <Run Foreground="LightGray"  Text="Type a query predicate (e.g., WHERE c.id='1'), or leave empty to query all documents."/>
                         </TextBlock>
-                        <avedit:TextEditor Grid.Row="1" Margin="5" x:Name="filter" Height="100"
+                        <avedit:TextEditor Grid.Row="1" Margin="5" x:Name="filter" 
                                            BorderThickness="1" BorderBrush="Gray"
-                                           SyntaxHighlighting="TSQL"
+                                           SyntaxHighlighting="TSQL" MinHeight="100"
                                            Document="{Binding FilterBox}"  ShowLineNumbers="False"
                         />
-                        <Button Grid.Row="1" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Width="50" HorizontalAlignment="Right" IsVisible="{Binding HasLastQueries}">
+                        
+                        <Button Grid.Row="1" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Width="50" HorizontalAlignment="Right" IsVisible="{Binding HasLastFilters}">
                             <Path Fill="Black" Data="M 0 0 L 6 6 L 12 0 Z"/>
                             <Button.Flyout >
                                 <MenuFlyout ItemsSource="{Binding LastFilters}">
@@ -158,7 +159,9 @@
                                       Foreground="LightBlue"
                                       ShowProgressText="False" VerticalAlignment="Top"
                                       Margin="0 0" />
-                        <avedit:TextEditor Grid.Column="0" Grid.Row="5" 
+                        </Grid>
+                        <GridSplitter Grid.Row="1"  Background="DarkGray"  ResizeDirection="Rows"/>
+                        <avedit:TextEditor Grid.Column="0" Grid.Row="2" 
                                            BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="5"
                                            HorizontalScrollBarVisibility="Auto"
                                            VerticalScrollBarVisibility="Visible"
@@ -166,10 +169,12 @@
                                            Document="{Binding FullDocumentBox}" />
                     </Grid>
                 </TabItem>
-                <TabItem Header="Query" FontSize="16">
-                    <Grid RowDefinitions="Auto,Auto,30,Auto,*"
-                          Margin="5">
-                        <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" Height="100"
+                <TabItem Header="Query" FontSize="16" Margin="5 0 0 5">
+                    <Grid RowDefinitions="Auto, 2, *">
+                        <Grid Grid.Row="0" RowDefinitions="*,Auto,Auto,Auto,Auto"
+                              Margin="5">
+               
+                        <avedit:TextEditor Grid.Row="0" Margin="5" x:Name="query" MinHeight="100"
                                            BorderThickness="1" BorderBrush="Gray"
                                            SyntaxHighlighting="TSQL"
                                            Document="{Binding QueryBox}"  ShowLineNumbers="False"
@@ -214,12 +219,15 @@
                                      Foreground="LightBlue"
                                      ShowProgressText="False" VerticalAlignment="Top"
                                      Margin="0 0" />
+                        </Grid>
+                        <GridSplitter Grid.Row="1"  Background="DarkGray"  ResizeDirection="Rows"/>
                         <avedit:TextEditor Name="DocumentationEditor" Grid.Column="0" Grid.Row="4" 
                                            BorderThickness="1" BorderBrush="Gray" CornerRadius="4" Margin="5"
                                            HorizontalScrollBarVisibility="Auto"
                                            VerticalScrollBarVisibility="Visible"
                                            SyntaxHighlighting="Json"
                                            Document="{Binding FullDocumentBox}" />
+                   
                     </Grid>
                 </TabItem>
             </TabControl>
