@@ -93,9 +93,14 @@
             <GridSplitter Grid.Column="1" Grid.Row="0"  Background="DarkGray"  ResizeDirection="Columns"/>
             <TabControl Grid.Column="2" Grid.Row="0" >
                 <TabItem Header="Filter" FontSize="16" Margin="5 0 0 5" >
-                    <Grid RowDefinitions="Auto, 2, *">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" MinHeight="220"></RowDefinition>
+                            <RowDefinition Height="2"></RowDefinition>
+                            <RowDefinition Height="*" MinHeight="150"></RowDefinition>
+                        </Grid.RowDefinitions>
                         <Grid RowDefinitions="Auto,*,Auto,30,Auto"
-                          Margin="5">
+                              Margin="5">
                         <TextBlock Grid.Row="0" Padding="2 10 6 0 ">
                             <Run Text="SELECT * FROM c"/>
                             <LineBreak/>
@@ -170,7 +175,12 @@
                     </Grid>
                 </TabItem>
                 <TabItem Header="Query" FontSize="16" Margin="5 0 0 5">
-                    <Grid RowDefinitions="Auto, 2, *">
+                    <Grid >
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" MinHeight="220"></RowDefinition>
+                            <RowDefinition Height="2"></RowDefinition>
+                            <RowDefinition Height="*" MinHeight="150"></RowDefinition>
+                        </Grid.RowDefinitions>
                         <Grid Grid.Row="0" RowDefinitions="*,Auto,Auto,Auto,Auto"
                               Margin="5">
                
