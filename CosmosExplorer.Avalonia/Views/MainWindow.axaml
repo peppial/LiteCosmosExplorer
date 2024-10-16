@@ -15,8 +15,12 @@
     <Design.DataContext>
         <vm:MainWindowViewModel />
     </Design.DataContext>
-    <Grid RowDefinitions="Auto, *" x:Name="Root">
-        <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}"  Padding="10">
+    <Window.Resources>
+        <bh:DivideByTenConverter x:Key="DivideByTenConverter"/>
+    </Window.Resources>
+    <LayoutTransformControl LayoutTransform="{Binding Path=ScaleString}">
+    <Grid RowDefinitions="Auto, *,Auto" x:Name="Root">
+         <Expander Grid.Row="0" VerticalAlignment="Top" IsExpanded="{Binding ConnectionsExpanded}"  Padding="10">
             <Expander.Header>
                 <Label>Connections  </Label>
             </Expander.Header>
@@ -55,7 +59,7 @@
             </Grid>
         </Expander>
         <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="0 1 0 0" IsVisible="{Binding !AddConnectionString}">
-        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="5*,2,6*" >
+        <Grid Grid.Row="1" RowDefinitions="1*" ColumnDefinitions="5*,3,6*" >
             <Grid  RowDefinitions="1*,4,2*" >
                 <ListBox Grid.Column="0" Grid.Row="0" x:Name="databases"
                          ItemsSource="{Binding Databases}"
@@ -96,7 +100,7 @@
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" MinHeight="220"></RowDefinition>
-                            <RowDefinition Height="2"></RowDefinition>
+                            <RowDefinition Height="3"></RowDefinition>
                             <RowDefinition Height="*" MinHeight="150"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid RowDefinitions="Auto,*,Auto,30,Auto"
@@ -178,7 +182,7 @@
                     <Grid >
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" MinHeight="220"></RowDefinition>
-                            <RowDefinition Height="2"></RowDefinition>
+                            <RowDefinition Height="3"></RowDefinition>
                             <RowDefinition Height="*" MinHeight="150"></RowDefinition>
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" RowDefinitions="*,Auto,Auto,Auto,Auto"
@@ -243,5 +247,25 @@
             </TabControl>
         </Grid>
             </Border>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+                <Grid Margin="10,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Content="-" Grid.Column="0" Padding="0" BorderBrush="Transparent" Background="Transparent" Command="{Binding DecreaseZoomCommand}" >
+                    </Button>
+                    <Slider x:Name="ZoomSlider" Grid.Column="1" Minimum="0.5"  Maximum="1.5" Value="{Binding Scale}"  Width="100"
+                            VerticalAlignment="Center" Margin="10,0"/>
+                    <Button  Content="+" Grid.Column="2" Padding="0" BorderBrush="Transparent" Background="Transparent" Command="{Binding IncreaseZoomCommand}">
+                    </Button>
+                    <TextBlock x:Name="PercentageText" Text="{Binding Scale , Converter={StaticResource DivideByTenConverter}}" 
+                               HorizontalAlignment="Right" VerticalAlignment="Center" 
+                               Margin="20,0,10,0" Grid.Column="3"/>
+                </Grid>
+          </StackPanel>
     </Grid>
+    </LayoutTransformControl>
 </Window>
