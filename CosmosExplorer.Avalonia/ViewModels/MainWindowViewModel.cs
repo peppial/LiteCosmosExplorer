@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.Input;
 using CosmosExplorer.Core;
@@ -45,8 +46,11 @@ namespace CosmosExplorer.Avalonia.ViewModels
         public ObservableCollection<string> LastFilters { get; set; } = [];
         public ObservableCollection<string> LastQueries { get; set; } = [];
 
-        public bool hasLastFilters;
-        public bool hasLastQueries;
+        private bool hasLastFilters;
+        private bool hasLastQueries;
+        private decimal scale = 1.0m;
+        private string scaleString = "scale(1.0)";
+        private decimal change = 0.1m;
 
         public MainWindowViewModel(IUserSettingsService userSettingsService,
             ICosmosDBDocumentService cosmosDbDocumentService, IStateContainer stateContainer)
@@ -192,6 +196,26 @@ namespace CosmosExplorer.Avalonia.ViewModels
             get { return this.FullDocumentBox.Text; }
             set { this.FullDocumentBox.Text = value; }
         }
+
+        public decimal Scale
+        {
+            get => scale;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref scale, value);
+                if (scale < 0.5m || scale > 2) return;
+                ScaleString = $"scale({scale.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)})";
+            }
+        }
+
+        public string ScaleString
+        {
+            get => scaleString;
+            set => this.RaiseAndSetIfChanged(ref scaleString, value);
+
+        }
+
+       
 
         [RelayCommand]
         private async Task LoadSettingsAsync()
@@ -428,6 +452,23 @@ namespace CosmosExplorer.Avalonia.ViewModels
 
             IsBusy = false;
         }
+
+        [RelayCommand]
+        private async Task IncreaseZoom()
+        {
+            Scale += change;
+        }
+        [RelayCommand]
+        private async Task DecreaseZoom()
+        {
+            Scale -= change;
+        }
+        [RelayCommand]
+        public void OnSliderValueChanged(object newValue)
+        {
+            // Your logic here
+        }
+        
         private async Task ReloadAsync()
         {
             IsBusy = true;
