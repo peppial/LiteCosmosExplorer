@@ -247,6 +247,8 @@
             </TabControl>
         </Grid>
             </Border>
+        <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="0 1 0 0" >
+
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
                 <Grid Margin="10,0">
                     <Grid.ColumnDefinitions>
@@ -266,6 +268,7 @@
                                Margin="20,0,10,0" Grid.Column="3"/>
                 </Grid>
           </StackPanel>
+            </Border>
     </Grid>
     </LayoutTransformControl>
 </Window>
