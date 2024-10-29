@@ -58,7 +58,7 @@ public class FileSystemUserSettingsService : IUserSettingsService
         }
         await semaphore.WaitAsync();
         try
-        {
+        { 
             await File.WriteAllTextAsync(settingsFilePath, JsonConvert.SerializeObject(stateContainer));
 
         }

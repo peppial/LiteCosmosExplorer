@@ -43,12 +43,6 @@ sealed class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
     { 
-        Log.Logger = new LoggerConfiguration()
-            //.Filter.ByIncludingOnly(Matching.WithProperty("Area", LogArea.Control))
-            .MinimumLevel.Verbose()
-            .WriteTo.File("trace.txt")
-            .CreateLogger();
-        
         return AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()

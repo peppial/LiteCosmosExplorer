@@ -36,6 +36,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
         <PackageReference Include="DotNet.Bundle" Version="0.9.13" />
         <PackageReference Include="MessageBox.Avalonia" Version="3.1.6" />
+        <PackageReference Include="Microsoft.ApplicationInsights" Version="2.22.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
         <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />

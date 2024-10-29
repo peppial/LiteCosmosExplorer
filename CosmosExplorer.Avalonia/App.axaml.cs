@@ -35,7 +35,6 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-      
         
         host = Host.CreateDefaultBuilder()
             .ConfigureServices((_, services) =>
@@ -60,6 +59,9 @@ public partial class App : Application
                 services.AddSingleton<IConnectionService,CosmosDbConnectionService>();
                 services.AddSingleton<IQueryService, CosmosDbQueryService>();
                 services.AddSingleton<ICommandService, CosmosDbCommandService>();
+                services.AddSingleton(_ => new TelemetryService("3d8e0171-40c2-441d-b7dd-7bab52c594fd"));
+                
+
 
             })
             .Build();
@@ -67,7 +69,7 @@ public partial class App : Application
         Container.UseMicrosoftDependencyResolver();
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-             
+           
             desktop.MainWindow = new MainWindow
             {
                 DataContext = host.Services.GetRequiredService<MainWindowViewModel>()
