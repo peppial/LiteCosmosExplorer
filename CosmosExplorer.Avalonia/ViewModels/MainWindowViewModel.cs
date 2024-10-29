@@ -158,6 +158,8 @@ namespace CosmosExplorer.Avalonia.ViewModels
                 selectedDatabase = value;
                 Documents.Clear();
                 FullDocument = "";
+                Filter = "";
+                Query = "";
                 ReloadLastFilters();
                 ReloadLastQueries();
                 this.RaiseAndSetIfChanged(ref selectedDatabase, value);
