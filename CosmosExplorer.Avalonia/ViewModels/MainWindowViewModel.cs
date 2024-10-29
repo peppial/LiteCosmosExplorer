@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using AvaloniaEdit.Document;
 using CommunityToolkit.Mvvm.Input;
+using CosmosExplorer.Avalonia.Services;
 using CosmosExplorer.Core;
 using CosmosExplorer.Core.Models;
 using CosmosExplorer.Core.State;
@@ -21,6 +22,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
         private readonly IUserSettingsService userSettingsService;
         private readonly ICosmosDBDocumentService cosmosDbDocumentService;
         private readonly IStateContainer stateContainer;
+        private readonly TelemetryService telemetryService;
 
         private bool isBusy;
         private string errorMessage;
@@ -53,14 +55,15 @@ namespace CosmosExplorer.Avalonia.ViewModels
         private decimal change = 0.1m;
 
         public MainWindowViewModel(IUserSettingsService userSettingsService,
-            ICosmosDBDocumentService cosmosDbDocumentService, IStateContainer stateContainer)
+            ICosmosDBDocumentService cosmosDbDocumentService, IStateContainer stateContainer, TelemetryService telemetryService)
         {
             this.userSettingsService =
                 userSettingsService ?? throw new ArgumentNullException(nameof(userSettingsService));
             this.cosmosDbDocumentService = cosmosDbDocumentService ??
                                            throw new ArgumentNullException(nameof(cosmosDbDocumentService));
             this.stateContainer = stateContainer ?? throw new ArgumentNullException(nameof(stateContainer));
-
+            this.telemetryService = telemetryService ?? throw new ArgumentNullException(nameof(telemetryService));
+            telemetryService.TrackPageView("MainWindow");
             LoadSettingsAsync();
             QueryBox = new TextDocument("SELECT * FROM c");
         }
@@ -301,6 +304,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
                 Message = "";
             }
@@ -385,6 +389,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
                 Message = "";
             }
@@ -407,6 +412,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
                 Message = "";
             }
@@ -448,6 +454,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
                 Message = "";
             }
@@ -496,6 +503,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
             }
 
@@ -526,6 +534,7 @@ namespace CosmosExplorer.Avalonia.ViewModels
             }
             catch (Exception e)
             {
+                telemetryService.TrackException(e);
                 ErrorMessage = e.Message;
                 Message = "";
             }
