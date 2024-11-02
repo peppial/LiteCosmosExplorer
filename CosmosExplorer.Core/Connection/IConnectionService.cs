@@ -10,8 +10,8 @@ public interface IConnectionService
     Database? database { get; }
     Container? container { get; }
 
-    Task<string?> ChangeContainerAsync(string connectionString, string databaseName, string containerName);
-    Task<IEnumerable<IDatabaseModel>> GetDatabasesAsync(string connectionString, CancellationToken cancellationToken);
+    Task<string?> ChangeContainerAsync(string connectionStringOrEndpoint, string databaseName, string containerName);
+    Task<IEnumerable<IDatabaseModel>> GetDatabasesAsync(string connectionStringOrEndpoint, CancellationToken cancellationToken);
     
     Partition? Partition { get; }
 

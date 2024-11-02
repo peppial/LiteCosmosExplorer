@@ -21,4 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CosmosExplorer.Core\CosmosExplorer.Core.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.13.1" />
+  </ItemGroup>
 </Project>
