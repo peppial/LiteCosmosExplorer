@@ -40,25 +40,12 @@ System Preferences -> Security & Privacy -> Privacy, select "Developer Tools" on
 - Right-click -> Run
 
 ## How to Start
-Add your connectrion string on tab Connections:
-- Connection string name: The display name of your connection string
+Add your connection string or endpoint in Connections:
+- Connection string name: The display name of your connection 
 - Connection string: Copy PRIMARY KEY or SECONDARY CONNECTION STRING from the Keys menu on the Azure Portal.
 
-az cosmosdb sql role assignment list \
---resource-group "HomeTraining" \
---account-name "hometrainingdb"
+As an alternative you can add a CosmosDB endpoint and rely on Default Azure Credential (Azure login, Visual Studio login etc.)
+In the latter case the appropriate roles needs to be configured for the CosmosDB account.
 
-az cosmosdb show \
---resource-group "HomeTraining" \
---name "hometrainingdb" \
---query "{id:id}"
-
-az cosmosdb sql role definition list --resource-group "HomeTraining" --account-name "hometrainingdb"
-
-/subscriptions/9ef0db8a-83d1-44f0-8934-262b7a30fc28/resourceGroups/HomeTraining/providers/Microsoft.DocumentDB/databaseAccounts/hometrainingdb
-
-az cosmosdb sql role assignment create --resource-group "HomeTraining" --account-name "hometrainingdb" --role-definition-id "00000000-0000-0000-0000-000000000002" --principal-id "98c8de5d-2771-4157-8306-dc1c9df1ae73" --scope "/subscriptions/9ef0db8a-83d1-44f0-8934-262b7a30fc28/resourceGroups/HomeTraining/providers/Microsoft.DocumentDB/databaseAccounts/hometrainingdb"
-
-az cosmosdb sql role assignment create --resource-group "HomeTraining" --account-name "hometrainingdb" --role-definition-id "00000000-0000-0000-0000-000000000001" --principal-id "98c8de5d-2771-4157-8306-dc1c9df1ae73" --scope "/subscriptions/9ef0db8a-83d1-44f0-8934-262b7a30fc28/resourceGroups/HomeTraining/providers/Microsoft.DocumentDB/databaseAccounts/hometrainingdb"
-
-az cosmosdb sql role assignment create --resource-group "HomeTraining" --account-name "hometrainingdb" --role-definition-id "00000000-0000-0000-0000-000000000001" --principal-id "0532732b-e2dc-4174-a49e-8a69df6ab5f3" --scope "/subscriptions/9ef0db8a-83d1-44f0-8934-262b7a30fc28/resourceGroups/HomeTraining/providers/Microsoft.DocumentDB/databaseAccounts/hometrainingdb"
+More details:
+https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/security/how-to-grant-data-plane-role-based-access?tabs=built-in-definition%2Ccsharp&pivots=azure-interface-cli
