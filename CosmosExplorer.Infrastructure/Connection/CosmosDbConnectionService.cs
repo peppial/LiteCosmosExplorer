@@ -1,4 +1,5 @@
-﻿using CosmosExplorer.Core.Connection;
+﻿using Azure.Identity;
+using CosmosExplorer.Core.Connection;
 using CosmosExplorer.Core.Models;
 using CosmosExplorer.Infrastructure.Extensions;
 using Microsoft.Azure.Cosmos;
@@ -16,9 +17,22 @@ public class CosmosDbConnectionService : IConnectionService, IDisposable
     public Container? container { get; private set; }
     private string? connectionString { get; set; }
 
-    public async Task<string?> ChangeContainerAsync(string connectionString, string databaseName, string containerName)
+    public async Task<string?> ChangeContainerAsync(string connectionStringOrEndpoint, string databaseName, string containerName)
     {
-        cosmosClient = new CosmosClient(connectionString);
+        if (connectionStringOrEndpoint?.ToLowerInvariant()?.StartsWith("accountendpoint") == true)
+        {
+            cosmosClient = new CosmosClient(connectionStringOrEndpoint);
+        }
+        else
+        {
+            DefaultAzureCredential credential = new();
+
+            cosmosClient = new(
+                accountEndpoint: connectionStringOrEndpoint,
+                tokenCredential: new DefaultAzureCredential()
+            );
+        }
+
         this.connectionString = connectionString;
         try
         { 
@@ -34,14 +48,27 @@ public class CosmosDbConnectionService : IConnectionService, IDisposable
         return null;
 
     }
-    public async Task<IEnumerable<IDatabaseModel>> GetDatabasesAsync(string connectionString, CancellationToken cancellationToken)
+    public async Task<IEnumerable<IDatabaseModel>> GetDatabasesAsync(string connectionStringOrEndpoint, CancellationToken cancellationToken)
     {
-        if (cosmosClient == null || this.connectionString != connectionString )
+        if (cosmosClient == null || this.connectionString != connectionStringOrEndpoint )
         {
-            if(this.connectionString != connectionString) cosmosClient?.Dispose();
+            if(this.connectionString != connectionStringOrEndpoint) cosmosClient?.Dispose();
             
-            cosmosClient = new CosmosClient(connectionString);
-            this.connectionString = connectionString;
+            
+            if (connectionStringOrEndpoint?.ToLowerInvariant()?.StartsWith("accountendpoint") == true)
+            {
+                cosmosClient = new CosmosClient(connectionStringOrEndpoint);
+            }
+            else
+            {
+                DefaultAzureCredential credential = new();
+
+                cosmosClient = new(
+                    accountEndpoint: connectionStringOrEndpoint,
+                    tokenCredential: new DefaultAzureCredential()
+                );
+            }
+            this.connectionString = connectionStringOrEndpoint;
         }
         var databaseProperties = cosmosClient.GetDatabaseQueryIterator<DatabaseProperties>();
         var databases = new List<CosmosDbDatabaseModel>();

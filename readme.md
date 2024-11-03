@@ -40,6 +40,12 @@ System Preferences -> Security & Privacy -> Privacy, select "Developer Tools" on
 - Right-click -> Run
 
 ## How to Start
-Add your connectrion string on tab Connections:
-- Connection string name: The display name of your connection string
+Add your connection string or endpoint in Connections:
+- Connection string name: The display name of your connection 
 - Connection string: Copy PRIMARY KEY or SECONDARY CONNECTION STRING from the Keys menu on the Azure Portal.
+
+As an alternative you can add a CosmosDB endpoint and rely on Default Azure Credential (Azure login, Visual Studio login etc.)
+In the latter case the appropriate roles needs to be configured for the CosmosDB account.
+
+More details:
+https://learn.microsoft.com/en-us/azure/cosmos-db/nosql/security/how-to-grant-data-plane-role-based-access?tabs=built-in-definition%2Ccsharp&pivots=azure-interface-cli
