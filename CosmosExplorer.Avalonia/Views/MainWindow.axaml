@@ -42,7 +42,7 @@
                           BorderThickness="1" BorderBrush="Gray">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                        <DataGridTextColumn Header="Connection String" Binding="{Binding ConnectionString}" Width="*" />
+                        <DataGridTextColumn Header="Connection string or endpoint" Binding="{Binding ConnectionString}" Width="*" />
                         <DataGridTemplateColumn>
                             <DataTemplate>
                             <Button Grid.Column="1"
